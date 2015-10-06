@@ -1,1 +1,1 @@
-# meteor_leaderboard
+# meteor leaderboard
