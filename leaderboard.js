@@ -1,5 +1,4 @@
 PlayersList = new Mongo.Collection('players');
-UserAccounts = new Mongo.Collection('users');
 
 if(Meteor.isClient){
   //client only code
