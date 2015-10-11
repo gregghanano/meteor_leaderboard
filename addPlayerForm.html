@@ -1,0 +1,10 @@
+<template name='addPlayerForm'>
+{{#if currentUser}}
+  <form role='form'>
+    <input type="text" name="playerName"/>
+    <input type='number' name='playerScore' value='0'/>
+    <input type="submit" value="Add Player"/>
+    <input type='button' class='remove' value='Remove Player' />
+  </form>
+  {{/if}}
+</template>
