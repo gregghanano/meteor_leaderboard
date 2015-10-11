@@ -4,6 +4,7 @@ if(Meteor.isClient){
   //client only code
   Template.leaderboard.helpers({
     'player': function(){
+      var currentUserId = Meteor.userId();
       return PlayersList.find({}, {sort: {score: -1, name: 1}});
     },
     'selectedClass': function(){
@@ -36,7 +37,8 @@ if(Meteor.isClient){
       var deletePlayer = PlayersList.findOne(selectedPlayer);
       var answer = confirm("Are you sure you want to delete "+deletePlayer.name+"?");
       if(answer){
-        PlayersList.remove(selectedPlayer);
+        Meteor.call('removePlayerData', selectedPlayer);
+        // PlayersList.remove(selectedPlayer);
       } else{
         console.log('you cancelled!');
       }
@@ -48,14 +50,31 @@ if(Meteor.isClient){
       e.preventDefault();
       var playerNameVar = e.target.playerName.value;
       var playerScoreVar = parseInt(e.target.playerScore.value);
-      PlayersList.insert({
-        name: playerNameVar,
-        score: playerScoreVar
-      });
+      Meteor.call('insertPlayerData', playerNameVar, playerScoreVar);
       template.find('form').reset();
     }
-  })
+  });
+  Meteor.subscribe('thePlayers');
 }
 if(Meteor.isServer){
   //server only code
+  Meteor.publish('thePlayers', function(){
+    var currentUserId = this.userId;
+    return PlayersList.find({createdBy: currentUserId});
+  });
+
+  Meteor.methods({
+    'insertPlayerData': function(playerNameVar, playerScoreVar){
+      var currentUserId = Meteor.userId();
+      PlayersList.insert({
+        name: playerNameVar,
+        score: playerScoreVar,
+        createdBy: currentUserId
+      });
+    },
+    'removePlayerData':function(selectedPlayer){
+      var currentUserId = Meteor.userId();
+      PlayersList.remove({_id:selectedPlayer, createdBy: currentUserId});
+    }
+  });
 }
