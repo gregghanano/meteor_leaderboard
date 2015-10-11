@@ -26,11 +26,11 @@ if(Meteor.isClient){
     },
     'click .increment': function(){
       var selectedPlayer = Session.get('selectedPlayer');
-      PlayersList.update(selectedPlayer, {$inc: {score: 5}});
+      Meteor.call('modifyPlayerScore', selectedPlayer, 5);
     },
     'click .decrement': function(){
       var selectedPlayer = Session.get('selectedPlayer');
-      PlayersList.update(selectedPlayer, {$inc: {score: -5}});
+      Meteor.call('modifyPlayerScore', selectedPlayer, -5);
     },
     'click .remove':function(){
       var selectedPlayer = Session.get('selectedPlayer');
@@ -38,7 +38,6 @@ if(Meteor.isClient){
       var answer = confirm("Are you sure you want to delete "+deletePlayer.name+"?");
       if(answer){
         Meteor.call('removePlayerData', selectedPlayer);
-        // PlayersList.remove(selectedPlayer);
       } else{
         console.log('you cancelled!');
       }
@@ -75,6 +74,10 @@ if(Meteor.isServer){
     'removePlayerData':function(selectedPlayer){
       var currentUserId = Meteor.userId();
       PlayersList.remove({_id:selectedPlayer, createdBy: currentUserId});
+    },
+    'modifyPlayerScore': function(selectedPlayer, scoreValue){
+      var currentUserId = Meteor.userId();
+      PlayersList.update({_id: selectedPlayer, createdBy: currentUserId}, {$inc: {score: scoreValue}});
     }
   });
 }
